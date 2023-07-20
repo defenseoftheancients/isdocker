@@ -1,0 +1,12 @@
+
+ISDOCKER_USAGE=$(cat <<EOF
+\033[33mUsage:\033[0m
+  db <sub-command>
+
+\033[33mOptions:\033[0m
+  -h, --help        Display this help menu
+
+\033[33mCommands:\033[0m
+  import                   Reads data from stdin and loads it into the current project\047s mysql database
+EOF
+)

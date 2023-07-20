@@ -1,0 +1,58 @@
+global:
+    checkNewVersion: false
+    sendAnonymousUsage: false
+
+api:
+    # insecure: true
+    dashboard: true
+    # debug: true
+
+accessLog: {}
+
+serversTransport:
+    insecureSkipVerify: true
+
+# log:
+#     level: DEBUG
+
+entryPoints:
+    http:
+        address: ":80"
+    https:
+        address: ":443"
+        http:
+            tls: {}
+            # tls:
+            #     certResolver: letsencrypt
+    p3000:
+        address: ":3000"
+    p4000:
+        address: ":4000"
+    p4500:
+        address: ":4500"
+    p7900:
+        address: ":7900"
+    p8080:
+        address: ":8080"
+    p9000:
+        address: ":9000"
+    p9099:
+        address: ":9099"
+    p9200:
+        address: ":9200"
+providers:
+    docker:
+        network: proxy
+        exposedByDefault: false
+    file:
+        directory: "/etc/traefik/dynamic"
+        watch: true
+
+certificatesResolvers:
+    letsencrypt:
+        acme:
+            caServer: "https://acme-v02.api.letsencrypt.org/directory"
+            email: "webmaster@gmail.com"
+            storage: letsencrypt/acme.json
+            httpChallenge:
+                entryPoint: http

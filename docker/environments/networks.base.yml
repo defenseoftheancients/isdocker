@@ -1,0 +1,8 @@
+version: "3.8"
+
+networks:
+  internal:
+    labels:
+     - dev.isdocker.environment.name=${ISDOCKER_ENV_NAME}
+    driver: bridge
+    name: ${ISDOCKER_ENV_NAME}_internal

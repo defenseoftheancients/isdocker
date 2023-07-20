@@ -1,0 +1,30 @@
+#!/BIN/bash
+
+ISDOCKER_HEADER="
+ ___ ____    ____   ___   ____ _  _______ ____  
+|_ _/ ___|  |  _ \ / _ \ / ___| |/ / ____|  _ \ 
+ | |\___ \  | | | | | | | |   | ' /|  _| | |_) |
+ | | ___) | | |_| | |_| | |___| . \| |___|  _ < 
+|___|____/  |____/ \___/ \____|_|\_\_____|_| \_\\
+
+"
+
+ISDOCKER_USAGE=$(cat <<EOF
+${ISDOCKER_HEADER:1}
+ISDOCKER version $(cat ${ISDOCKER_DIR}/version)
+
+\033[33mUsage:\033[0m
+  command [options] [arguments]
+
+\033[33mOptions:\033[0m
+  -h, --help        Display this help menu
+
+\033[33mCommands:\033[0m
+  svc               Orchestrates global services
+  env-init          Configure environment by adding '.env' file to the current working directory
+  env               Controls an environment from any point within the root project directory
+  shell             Launches into a shell within the current project environment 
+  db                Interacts with the db service on an environment
+  version           Show version information
+EOF
+)

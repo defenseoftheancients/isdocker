@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:${REDIS_VERSION}
+    command: redis-server /usr/local/etc/redis/redis.conf --maxmemory ${REDIS_MAX_MEMORY}
+    networks:
+        - internal
+    volumes:
+        - ${ISDOCKER_ENV_CONF:-}/redis.conf:/usr/local/etc/redis/redis.conf:ro
+        - redis_data:/data
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+    ? redis_data

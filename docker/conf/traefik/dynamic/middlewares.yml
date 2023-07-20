@@ -1,0 +1,21 @@
+http:
+    middlewares:
+        https-redirect:
+            redirectScheme:
+                scheme: https
+                permanent: true
+        allure-redirectregex:
+            redirectregex:
+                regex: '^https?:\/\/([^\/]+)\/allure/$$'
+                replacement: "https:///${1}/allure/allure-docker-service/projects/"
+                permanent: true
+        adminer-stripprefix:
+            stripPrefix:
+                prefixes:
+                    - "/adminer"
+                    - "/adminer/"
+        rabbitmq-stripprefix:
+            stripPrefix:
+                prefixes:
+                    - "/rabbitmq"
+                    - "/rabbitmq/"

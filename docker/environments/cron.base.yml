@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  cron:
+    image: rogerdz/crontab
+    environment:
+      - CRONTAB_PROJECT=${COMPOSE_PROJECT_NAME}
+    networks:
+      - internal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${ISDOCKER_ENV_CONF:-}/cron.json:/opt/crontab/config.json:ro
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+        - cli

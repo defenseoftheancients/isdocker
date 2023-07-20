@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  cli:
+    image: rogerdz/php-fpm:${PHP_VERSION}-cli
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.livereload-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`) && (Path(`/livereload.js`) || Path(`/livereload`))
+      - traefik.http.routers.livereload-${COMPOSE_PROJECT_NAME}.priority=10000
+      - traefik.http.routers.livereload-${COMPOSE_PROJECT_NAME}.entrypoints=http,https
+      - traefik.http.services.livereload-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=35729
+    networks:
+      internal:
+      mail:
+      proxy:
+    container_name: ${ISDOCKER_ENV_NAME}-cli
+    env_file: ${ISDOCKER_ENV_CONF:-}/blackfire.env
+    environment:
+      UID: ${DOCKER_UID:-1000}
+      GID: ${DOCKER_GID:-1000}
+      PHP_EXTENSIONS_ENABLE: ${PHP_EXTENSIONS_ENABLE}
+      WORK_DIR: ${WORK_DIR}
+      COMPOSER_VERSION: ${COMPOSER_VERSION}
+        # XDEBUG_REMOTE_ENABLE: 1
+    volumes:
+      - ${WORK_DIR}:${WORK_DIR}:cached
+      # - ./env.php:${WORK_DIR}/app/etc/env.php
+      - ${ISDOCKER_ENV_CONF:-}/php-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini:ro
+      - ${ISDOCKER_ENV_CONF:-}/smtp:/etc/msmtprc:ro
+      - ${CA_STORE:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates:ro
+      - ~/.composer:/home/dev/.composer:delegated
+      - ~/.ssh:/home/dev/.ssh:delegated
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    external_links:
+      - "proxy:${VIRTUAL_HOST}"
+    user: dev
+    tty: true
+    stdin_open: true
+    init: true
+    working_dir: ${WORK_DIR}
+    restart: unless-stopped
+    logging: 
+      options:
+        max-size: "10m"
+        max-file: "3"
+    hostname: cli-${COMPOSE_PROJECT_NAME}-docker
+
+networks:
+  mail:
+    external: true
+  proxy:
+    external: true

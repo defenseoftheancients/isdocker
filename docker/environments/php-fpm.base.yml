@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  php:
+    image: rogerdz/php-fpm:${PHP_VERSION}
+    networks:
+        internal:
+          aliases:
+            - php-fpm
+        mail:
+        gateway:
+    environment:
+        UID: ${DOCKER_UID:-1000}
+        GID: ${DOCKER_GID:-1000}
+        PHP_EXTENSIONS_ENABLE: ${PHP_EXTENSIONS_ENABLE}
+        WORK_DIR: ${WORK_DIR}
+        # XDEBUG_REMOTE_ENABLE: 1
+    volumes:
+        - ${WORK_DIR}:${WORK_DIR}:cached
+        # - ./env.php:${WORK_DIR}/app/etc/env.php
+        - ${ISDOCKER_ENV_CONF:-}/php-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini:ro
+        - ${ISDOCKER_ENV_CONF:-}/smtp:/etc/msmtprc:ro
+        - ${CA_STORE:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates:ro
+        - ~/.composer:/home/dev/.composer:delegated
+        - ~/.ssh:/home/dev/.ssh:delegated
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    external_links:
+        - "proxy:${VIRTUAL_HOST}"
+    cap_add:
+        - SYS_PTRACE
+    restart: unless-stopped
+    logging:            
+      options:
+        max-size: "10m"
+        max-file: "3"
+    hostname: php-${COMPOSE_PROJECT_NAME}-docker
+
+networks:
+  gateway:
+    external: true
+  mail:
+    external: true

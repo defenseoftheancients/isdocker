@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  blackfire:
+    image: blackfire/blackfire
+    env_file: ${ISDOCKER_ENV_CONF:-}/blackfire.env
+    networks:
+      - internal
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+    proxy:
+        image: traefik
+        labels:
+            - mkcert.services.traefik=''
+            - traefik.enable=true
+            - traefik.http.routers.traefik.rule=Host(`traefik`)
+            - traefik.http.routers.traefik.entrypoints=http,https
+            - traefik.http.routers.traefik.service=api@internal
+        volumes:
+            - ./conf/traefik:/etc/traefik
+            - letsencrypt-acme:/letsencrypt
+            - ssl-certs:/etc/cert
+            - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:ro
+        environment:
+            VIRTUAL_HOST: traefik
+        networks:
+            - proxy
+            - gateway
+        restart: &restart unless-stopped
+        container_name: proxy
+        security_opt:
+            - no-new-privileges:true
+        logging: &logging
+            options:
+                max-size: "10m"
+                max-file: "3"
+    mkcert:
+        image: rogerdz/mkcert
+        volumes:
+            - ssl-certs:/app/certs:rw
+            - ~/.mozilla/firefox:/root/.mozilla/firefox:rw
+            - ~/.pki/nssdb:/root/.pki/nssdb:rw
+            - ~/.local/share/mkcert:/app/ca:rw
+            - ${CA_STORE:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
+            - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:ro
+            - ./conf/traefik/dynamic:/traefik
+        network_mode: none
+        restart: *restart
+        container_name: mkcert
+        depends_on:
+            - proxy
+        logging: *logging
+
+    hosts:
+        image: rogerdz/hosts-local
+        environment:
+            - CONTAINER_NAME_IP=${CONTAINER_NAME_IP:-proxy}
+        volumes:
+            - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:ro
+            - /etc/hosts:/hosts
+        network_mode: none
+        init: true
+        restart: *restart
+        container_name: hosts
+        depends_on:
+            - proxy
+        logging: *logging
+
+    adminer:
+        image: rogerdz/adminer
+        command: php -S 0.0.0.0:8080 -t /var/www/html
+        ports:
+          - 0.0.0.0:81:8080
+        networks:
+            - database
+        restart: *restart
+        container_name: adminer
+        logging: *logging
+
+    maildev:
+        image: rogerdz/maildev
+        environment:
+            MAILDEV_MAIL_DIRECTORY: /var/maildev/data
+            MAILDEV_STORE_LIMIT: ${MAILDEV_STORE_LIMIT:-100}
+        volumes:
+            - maildev-data:/var/maildev/data
+        ports:
+            - 0.0.0.0:82:1080
+        networks:
+            - mail
+        restart: *restart
+        container_name: maildev
+        logging: *logging
+
+    # mail:
+    #     image: boky/postfix
+    #     environment:
+    #         - ALLOW_EMPTY_SENDER_DOMAINS=true
+    #         - HOSTNAME=postfix-docker
+    #     volumes:
+    #         - postfix_dkim:/etc/opendkim/keys
+    #         - postfix_config:/etc/postfix
+    #         - postfix_data:/var/spool/postfix
+    #     networks:
+    #         - mail
+    #     restart: *restart
+    #     container_name: mail
+    #     logging: *logging
+
+    elasticvue:
+        image: cars10/elasticvue
+        ports:
+            - 0.0.0.0:83:8080
+        networks:
+            - esnet
+        init: true
+        restart: *restart
+        container_name: elasticvue
+        logging: *logging
+        
+networks:
+    proxy:
+        driver: bridge
+        name: proxy
+    gateway:
+        driver: bridge
+        name: gateway
+    database:
+        driver: bridge
+        name: database
+    mail:
+        driver: bridge
+        name: mail
+    esnet:
+        driver: bridge
+        name: esnet
+
+volumes:
+    letsencrypt-acme:
+    ssl-certs:
+        name: ssl-certs
+    ? maildev-data
+    ? postfix_dkim
+    ? postfix_config
+    ? postfix_data

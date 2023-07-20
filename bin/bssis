@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly ISDOCKER_DIR="$(
+  cd "$(
+    dirname "$(
+      (readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}") |
+        sed -e "s#^../#$(dirname "$(dirname "${BASH_SOURCE[0]}")")/#"
+    )"
+  )/.." >/dev/null &&
+    pwd
+)"
+
+export readonly ISDOCKER_BIN="${ISDOCKER_DIR}/bin/bssis"
+export readonly DOCKER_COMPOSE_COMMAND="${DOCKER_COMPOSE_COMMAND:-"docker compose"}"
+export readonly DOCKER_COMMAND="${DOCKER_COMMAND:-"docker"}"
+
+source "${ISDOCKER_DIR}/utils/core.sh"
+source "${ISDOCKER_DIR}/utils/env.sh"
+
+if ! which docker >/dev/null; then
+  echo -e "\033[31mDocker could not be found; please install and try again.!\033[0m"
+  exit 1
+fi
+
+declare ISDOCKER_HELP=
+declare ISDOCKER_PARAMS=()
+declare ISDOCKER_CMD_VERB=
+declare ISDOCKER_CMD_EXEC=
+declare ISDOCKER_CMD_HELP=
+declare ISDOCKER_CMD_ANYARGS=(svc)
+
+if (("$#")); then
+  ISDOCKER_ENV_PATH="$(locateEnvPath 2>/dev/null)" || true
+
+  if [[ -f "${ISDOCKER_DIR}/commands/${1}.cmd" ]]; then
+    ISDOCKER_CMD_VERB="$1"
+    ISDOCKER_CMD_EXEC=${ISDOCKER_DIR}/commands/${1}.cmd
+    ISDOCKER_CMD_HELP=${ISDOCKER_DIR}/commands/${1}.help
+    shift
+  else
+    ISDOCKER_HELP=1
+  fi
+else
+  ISDOCKER_HELP=1
+fi
+
+while (("$#")); do
+  case "$1" in
+  -h | --help)
+    ISDOCKER_HELP=1
+    break
+    ;;
+  --)
+    shift
+    containsElement "${ISDOCKER_CMD_VERB}" "${ISDOCKER_CMD_ANYARGS[@]}" || break
+    ;;
+  -* | --*=)
+    containsElement "${ISDOCKER_CMD_VERB}" "${ISDOCKER_CMD_ANYARGS[@]}" && break
+    ;;
+  *)
+    ISDOCKER_PARAMS+=("$1")
+    shift
+    ;;
+  esac
+done
+
+if [[ ${ISDOCKER_HELP} ]]; then
+  source "${ISDOCKER_DIR}/commands/usage.cmd"
+fi
+source "${ISDOCKER_CMD_EXEC}"
+

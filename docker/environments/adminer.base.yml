@@ -1,0 +1,27 @@
+version: '3.8'
+services:   
+  adminer:
+    image: rogerdz/adminer
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adminer-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`) && PathPrefix(`/adminer/`)
+      - traefik.http.routers.adminer-${COMPOSE_PROJECT_NAME}.priority=10000
+      - traefik.http.routers.adminer-${COMPOSE_PROJECT_NAME}.entrypoints=http,https
+      - traefik.http.routers.adminer-${COMPOSE_PROJECT_NAME}.middlewares=adminer-stripprefix@file
+      - traefik.http.services.adminer-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=8080
+    environment:
+      ADMINER_DEFAULT_USERNAME: ${MYSQL_USER}
+      ADMINER_DEFAULT_PASSWORD: ${MYSQL_PASSWORD}
+      ADMINER_DEFAULT_DATABASE: ${MYSQL_DATABASE}
+    networks:
+      - proxy
+      - internal
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+networks:
+  proxy:
+    external: true

@@ -1,0 +1,16 @@
+defaults
+tls off
+
+## Maildev Account ##
+account maildev
+host maildev
+port 1025
+from maildev@maildev.com
+
+## Mail Account ##
+account mail
+host mail
+port 587
+from mail@mail.com
+
+account default: maildev

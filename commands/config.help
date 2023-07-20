@@ -1,0 +1,8 @@
+ISDOCKER_USAGE=$(cat <<EOF
+\033[33mUsage:\033[0m
+  config [args]
+
+\033[33mOptions:\033[0m
+  -h, --help        Display this help menu
+EOF
+)

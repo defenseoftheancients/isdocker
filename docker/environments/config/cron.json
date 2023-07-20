@@ -1,0 +1,16 @@
+{
+    "m2_cron_run": {
+        "name": "magento cron",
+        "schedule": "*/5 * * * *",
+        "command": "php bin/magento cron:run 2>&1 | grep -v 'Ran jobs by schedule' >> var/log/magento.cron.log",
+        "container": "cli",
+        "shell": "/bin/bash"
+    },
+    "clear_old_session": {
+        "name": "clear old session",
+        "schedule": "0 */2 * * *",
+        "command": "find var/session/sess* -type f -mtime +1 -exec rm -- {} \\;",
+        "container": "cli",
+        "shell": "/bin/bash"
+    }
+}

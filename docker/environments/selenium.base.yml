@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  selenium:
+    image: rogerdz/selenium:standalone-${SELENIUM_BROWSER:-chrome}
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.selenium-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`)
+        - traefik.http.routers.selenium-${COMPOSE_PROJECT_NAME}.priority=10000
+        - traefik.http.routers.selenium-${COMPOSE_PROJECT_NAME}.entrypoints=p7900
+        - traefik.http.routers.selenium-${COMPOSE_PROJECT_NAME}.service=selenium-${COMPOSE_PROJECT_NAME}
+        - traefik.http.services.selenium-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=7900
+    shm_size: 2gb
+    environment:
+        SE_VNC_NO_PASSWORD: 1
+    volumes:
+        - ${CA_STORE:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates:ro
+    networks:
+        - proxy
+        - internal
+    external_links:
+      - "proxy:${VIRTUAL_HOST}"
+    init: true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true
+   

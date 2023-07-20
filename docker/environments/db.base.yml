@@ -1,0 +1,28 @@
+version: '3.8'
+services:    
+  db:
+    image: ${DATABASE_ENGINE}:${DATABASE_ENGINE_VERSION}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - ${ISDOCKER_ENV_CONF:-}/mysql.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      - db_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - internal
+      - database
+    restart: unless-stopped
+    logging: 
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  database:
+    external: true
+
+volumes:
+    ? db_data

@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  httpd:
+    image: rogerdz/httpd
+    networks:
+        - internal
+    environment:
+        UID: ${DOCKER_UID:-1000}
+        GID: ${DOCKER_GID:-1000}
+        WORK_DIR: ${WORK_DIR}
+    volumes:
+        - ${ISDOCKER_ENV_CONF:-}/httpd.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+        - ${WORK_DIR}:${WORK_DIR}:cached
+    restart: *restart
+    logging: *logging
+    depends_on:
+        - php

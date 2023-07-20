@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  allure:
+    image: frankescobar/allure-docker-service
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.allure-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`) && PathPrefix(`/allure/`)
+        - traefik.http.routers.allure-${COMPOSE_PROJECT_NAME}.priority=10000
+        - traefik.http.routers.allure-${COMPOSE_PROJECT_NAME}.entrypoints=http,https
+        - traefik.http.routers.allure-${COMPOSE_PROJECT_NAME}.service=allure-${COMPOSE_PROJECT_NAME}
+        - traefik.http.services.allure-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=5050
+        - traefik.http.routers.allure-${COMPOSE_PROJECT_NAME}.middlewares=allure-redirectregex@file
+    environment:
+        URL_PREFIX: "/allure"
+        CHECK_RESULTS_EVERY_SECONDS: 5
+        OPTIMIZE_STORAGE: 1
+    user: root
+    volumes:
+        - allure_data:/app/allure-results
+        - ${ALLURE_UNIT_TEST_RESULT_DIR:-allure_data}:/app/projects/unit/results:delegated
+        - ${ALLURE_INTEGRATION_TEST_RESULT_DIR:-allure_data}:/app/projects/integration/results:delegated
+        - ${ALLURE_MFTF_TEST_RESULT_DIR:-allure_data}:/app/projects/mftf/results:delegated
+    networks:
+        - proxy
+        - internal
+    init: true
+    restart: unless-stopped
+    logging: 
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  ? allure_data

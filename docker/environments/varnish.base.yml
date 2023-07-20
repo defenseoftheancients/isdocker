@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  varnish:
+    image: rogerdz/varnish:${VARNISH_VERSION}
+    environment:
+        - VARNISH_SIZE=${VARNISH_SIZE}
+    networks:
+        - internal
+    volumes:
+        - ${ISDOCKER_ENV_CONF:-}/varnish.vcl:/etc/varnish/default.vcl:ro
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - nginx

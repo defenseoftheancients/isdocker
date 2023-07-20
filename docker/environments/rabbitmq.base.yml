@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION}-management
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.rabbitmq-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`) && PathPrefix(`/rabbitmq/`)
+        - traefik.http.routers.rabbitmq-${COMPOSE_PROJECT_NAME}.priority=10000
+        - traefik.http.routers.rabbitmq-${COMPOSE_PROJECT_NAME}.entrypoints=http,https
+        - traefik.http.routers.rabbitmq-${COMPOSE_PROJECT_NAME}.middlewares=rabbitmq-stripprefix@file
+        - traefik.http.services.rabbitmq-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=15672
+    environment:
+        RABBITMQ_ERLANG_COOKIE: cluster_cookie
+        RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    networks:
+        - proxy
+        - internal
+    volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    logging:            
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+    ? rabbitmq_data

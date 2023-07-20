@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: zookeeper
+    networks:
+        - internal
+    volumes:
+        - zookeeper_data:/data
+        - zookeeper_logs:/logs
+        - zookeeper_datalog:/datalog
+    restart: unless-stopped
+    logging:            
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+    ? zookeeper_data
+    ? zookeeper_logs
+    ? zookeeper_datalog

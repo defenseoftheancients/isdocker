@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  xhprof:
+    image: rogerdz/xhprof-viewer
+    labels:
+        - traefik.enable=true
+        - traefik.http.routers.xhprof-${COMPOSE_PROJECT_NAME}.rule=Host(`xhprof.${VIRTUAL_HOST}`)
+        - traefik.http.routers.xhprof-${COMPOSE_PROJECT_NAME}.priority=10000
+        - traefik.http.routers.xhprof-${COMPOSE_PROJECT_NAME}.entrypoints=http,https
+        - traefik.http.services.xhprof-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80
+    networks:
+        proxy:
+        internal:
+    environment:
+        VIRTUAL_HOST: xhprof.${VIRTUAL_HOST}
+    restart: unless-stopped
+    logging:            
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true

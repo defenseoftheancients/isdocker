@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  browser-sync:
+    image: rogerdz/browser-sync
+    labels:
+        - traefik.enable=true
+        # HTTP traffic
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}.rule=Host(`bs.${VIRTUAL_HOST}`)
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}.entrypoints=http
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}.service=browser-sync-${COMPOSE_PROJECT_NAME}
+        - traefik.http.services.browser-sync-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80
+        # HTTPS traffic
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}-https.rule=Host(`bs.${VIRTUAL_HOST}`)
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}-https.entrypoints=https
+        - traefik.http.routers.browser-sync-${COMPOSE_PROJECT_NAME}-https.service=browser-sync-${COMPOSE_PROJECT_NAME}-https
+        - traefik.http.services.browser-sync-${COMPOSE_PROJECT_NAME}-https.loadbalancer.server.port=443
+        - traefik.http.services.browser-sync-${COMPOSE_PROJECT_NAME}-https.loadbalancer.server.scheme=https
+    networks:
+        - proxy
+        - internal
+    environment:
+        BROWSER_SYNC_PROXY: https://${VIRTUAL_HOST}
+        BROWSER_SYNC_FILES: 'app/**/*.phtml, app/**/*.xml, app/**/*.css, app/**/*.js, vendor/**/*.css, vendor/**/*.js'
+        VIRTUAL_HOST: bs.${VIRTUAL_HOST}
+    volumes:
+        - ${WORK_DIR}:/src:cached
+        - ${CA_STORE:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates:ro
+    init: true
+    external_links:
+      - "proxy:${VIRTUAL_HOST}"
+    restart: unless-stopped
+    logging:            
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true

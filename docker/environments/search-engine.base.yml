@@ -1,0 +1,49 @@
+version: '3.8'
+services:    
+  search-engine:
+    image: rogerdz/${SEARCH_ENGINE}:${SEARCH_ENGINE_VERSION}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.search-engine-${COMPOSE_PROJECT_NAME}.rule=Host(`${VIRTUAL_HOST}`)
+      - traefik.http.routers.search-engine-${COMPOSE_PROJECT_NAME}.priority=10000
+      - traefik.http.routers.search-engine-${COMPOSE_PROJECT_NAME}.entrypoints=p9200
+      - traefik.http.routers.search-engine-${COMPOSE_PROJECT_NAME}.service=search-engine-${COMPOSE_PROJECT_NAME}
+      - traefik.http.services.search-engine-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=9200
+    environment:
+      - "ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms64m -Xmx512m}"
+      - "OPENSEARCH_JAVA_OPTS=${ES_JAVA_OPTS:--Xms64m -Xmx512m}"
+      - node.name=${COMPOSE_PROJECT_NAME}
+      - node.store.allow_mmap=false
+      - cluster.routing.allocation.disk.watermark.low=2gb
+      - cluster.routing.allocation.disk.watermark.high=1gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=512mb
+      - cluster.info.update.interval=120s
+      - http.cors.enabled=true
+      - http.cors.allow-origin=/.*/
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/${SEARCH_ENGINE}/data
+    networks:
+      internal:
+        aliases:
+          - elasticsearch
+          - opensearch
+      esnet:
+      proxy:
+    init: true
+    restart: unless-stopped
+    logging: 
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+    ? elasticsearch_data
+
+networks:
+  esnet:
+    external: true
+  proxy:
+    external: true
