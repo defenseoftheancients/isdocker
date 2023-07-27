@@ -14,6 +14,7 @@ readonly ISDOCKER_DIR="$(
 
 export readonly ISDOCKER_BIN="${ISDOCKER_DIR}/bin/bssis"
 export readonly DOCKER_COMPOSE_COMMAND="${DOCKER_COMPOSE_COMMAND:-"docker compose"}"
+export readonly ISDOCKER_ENV_CONF="${ISDOCKER_DIR}/docker/environments/config"
 export readonly DOCKER_COMMAND="${DOCKER_COMMAND:-"docker"}"
 
 source "${ISDOCKER_DIR}/utils/core.sh"

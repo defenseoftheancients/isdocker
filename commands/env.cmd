@@ -10,11 +10,9 @@ fi
 
 trap '' ERR
 
-export readonly ISDOCKER_ENV_CONF="${ISDOCKER_ENV_PATH}/.isdocker"
+export readonly ISDOCKER_DIR_CONFIG_FILE="${ISDOCKER_ENV_PATH}/.isdocker"
 DOCKER_COMPOSE_ARGS=()
 REQUIRE_CONFIG_FILES=()
-declare -A CONFIG_FILES=()
-declare -A CONFIG_FILES_UNIQUE=()
 
 appendEnvPartialIfExists "networks"
 
@@ -22,7 +20,7 @@ appendEnvPartialIfExists "networks"
     && appendEnvPartialIfExists "nginx"
 
 [[ ${ISDOCKER_PHP} -eq 1 ]] \
-    && appendEnvPartialIfExists "php-fpm"
+    && appendEnvPartialIfExists "php"
 
 [[ ${ISDOCKER_CLI} -eq 1 ]] \
     && appendEnvPartialIfExists "cli"
@@ -69,22 +67,12 @@ appendEnvPartialIfExists "networks"
 [[ ${ISDOCKER_BLACKFIRE} -eq 1 ]] \
     && appendEnvPartialIfExists "blackfire"
 
-
-if [[ -f "${ISDOCKER_ENV_CONF}/isdocker-env.yml" ]]; then
+if [[ -f "${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml" ]]; then
     DOCKER_COMPOSE_ARGS+=("-f")
-    DOCKER_COMPOSE_ARGS+=("${ISDOCKER_ENV_CONF}/isdocker-env.yml")
+    DOCKER_COMPOSE_ARGS+=("${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml")
 fi
 
 if [[ "${ISDOCKER_PARAMS[0]}" == "up" ]]; then
-
-    if [[ ! ${#REQUIRE_CONFIG_FILES[@]} -eq 0  ]]; then
-        REQUIRE_CONFIG_FILES_JOIN=$(printf " %s" "${REQUIRE_CONFIG_FILES[@]}")
-        preHandleImageConfigFile ${REQUIRE_CONFIG_FILES_JOIN[*]}
-        for CONFIG_FILE in "${!CONFIG_FILES_UNIQUE[@]}"
-        do
-            createFileConfigFromEnv $CONFIG_FILE
-        done
-    fi
 
     ${DOCKER_COMPOSE_COMMAND} \
         --project-directory "${ISDOCKER_ENV_PATH}" -p "${ISDOCKER_ENV_NAME}" \
