@@ -4,7 +4,7 @@ function locateEnvPath () {
     while [[ "${ISDOCKER_ENV_PATH}" != "/" ]]; do
     	
         if [[ -f "${ISDOCKER_ENV_PATH}/.env" ]] \
-            && grep "^ISDOCKER_ENV_NAME" "${ISDOCKER_ENV_PATH}/.env" >/dev/null
+            && grep "^COMPOSE_PROJECT_NAME" "${ISDOCKER_ENV_PATH}/.env" >/dev/null
         then
             break
         fi
@@ -36,7 +36,7 @@ function loadEnvConfig () {
     local ISDOCKER_ENV_PATH="${1}"
     eval "$(cat "${ISDOCKER_ENV_PATH}/.env" | sed 's/\r$//g')"
 
-    ISDOCKER_ENV_NAME="${ISDOCKER_ENV_NAME:-}"
+    COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-}"
     ISDOCKER_ENV_SUBT=""
 
     case "${OSTYPE:-undefined}" in
@@ -54,7 +54,7 @@ function loadEnvConfig () {
 
 
 function renderEnvNetworkName() {
-    echo "${ISDOCKER_ENV_NAME}_internal" | tr '[:upper:]' '[:lower:]'
+    echo "${COMPOSE_PROJECT_NAME}_internal" | tr '[:upper:]' '[:lower:]'
 }
 
 function preHandleImageConfigFile() {
@@ -148,7 +148,7 @@ function initIsdockerEnvFile () {
    
     touch ${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml
     cat >> "${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml" <<EOF
-version: '3.8'
+version: '$COMPOSE_FILE_VERSION'
 
 services:
 EOF
@@ -210,7 +210,7 @@ function appendIsdockerEnvFile () {
 
     if [[ ! -s ${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml ]]; then
     cat >> "${ISDOCKER_DIR_CONFIG_FILE}/isdocker-env.yml" <<EOF
-version: '3.8'
+version: '$COMPOSE_FILE_VERSION'
 
 services:
 EOF

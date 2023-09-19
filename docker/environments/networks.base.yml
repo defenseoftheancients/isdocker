@@ -3,6 +3,6 @@ version: "3.8"
 networks:
   internal:
     labels:
-     - dev.isdocker.environment.name=${ISDOCKER_ENV_NAME}
+     - dev.isdocker.environment.name=${COMPOSE_PROJECT_NAME}
     driver: bridge
-    name: ${ISDOCKER_ENV_NAME}_internal
+    name: ${COMPOSE_PROJECT_NAME}_internal

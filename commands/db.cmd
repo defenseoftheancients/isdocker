@@ -13,7 +13,7 @@ if (( ${#ISDOCKER_PARAMS[@]} == 0 )) || [[ "${ISDOCKER_PARAMS[0]}" == "help" ]];
 fi
 
 ## load connection information for the mysql service
-CONTAINER_DB=$("$DOCKER_COMMAND" ps --filter "name=${ISDOCKER_ENV_NAME}-db*" --format "{{.ID}}") 
+CONTAINER_DB=$("$DOCKER_COMMAND" ps --filter "name=${COMPOSE_PROJECT_NAME}-db*" --format "{{.ID}}")
 if [[ ! ${CONTAINER_DB} ]]; then
     fatal "No container found for db service."
 fi

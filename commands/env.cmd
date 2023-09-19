@@ -75,7 +75,7 @@ fi
 if [[ "${ISDOCKER_PARAMS[0]}" == "up" ]]; then
 
     ${DOCKER_COMPOSE_COMMAND} \
-        --project-directory "${ISDOCKER_ENV_PATH}" -p "${ISDOCKER_ENV_NAME}" \
+        --project-directory "${ISDOCKER_ENV_PATH}" -p "${COMPOSE_PROJECT_NAME}" \
         "${DOCKER_COMPOSE_ARGS[@]}" up --no-start
 
     connectPeeredServices "$(renderEnvNetworkName)"
@@ -89,6 +89,6 @@ elif [[ "${ISDOCKER_PARAMS[0]}" == "down" ]]; then
 fi
 
 ${DOCKER_COMPOSE_COMMAND} \
-    --project-directory "${ISDOCKER_ENV_PATH}" -p "${ISDOCKER_ENV_NAME}" \
+    --project-directory "${ISDOCKER_ENV_PATH}" -p "${COMPOSE_PROJECT_NAME}" \
     "${DOCKER_COMPOSE_ARGS[@]}" "${ISDOCKER_PARAMS[@]}" "$@"
   

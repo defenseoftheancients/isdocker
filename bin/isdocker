@@ -16,6 +16,7 @@ export readonly ISDOCKER_BIN="${ISDOCKER_DIR}/bin/bssis"
 export readonly DOCKER_COMPOSE_COMMAND="${DOCKER_COMPOSE_COMMAND:-"docker compose"}"
 export readonly ISDOCKER_ENV_CONF="${ISDOCKER_DIR}/docker/environments/config"
 export readonly DOCKER_COMMAND="${DOCKER_COMMAND:-"docker"}"
+export readonly COMPOSE_FILE_VERSION=3.8
 
 source "${ISDOCKER_DIR}/utils/core.sh"
 source "${ISDOCKER_DIR}/utils/env.sh"
@@ -30,7 +31,7 @@ declare ISDOCKER_PARAMS=()
 declare ISDOCKER_CMD_VERB=
 declare ISDOCKER_CMD_EXEC=
 declare ISDOCKER_CMD_HELP=
-declare ISDOCKER_CMD_ANYARGS=(svc)
+declare ISDOCKER_CMD_ANYARGS=(svc env env-init db shell config)
 
 if (("$#")); then
   ISDOCKER_ENV_PATH="$(locateEnvPath 2>/dev/null)" || true

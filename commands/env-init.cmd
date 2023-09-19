@@ -13,13 +13,16 @@ if test -f "${ISDOCKER_ENV_PATH}/.env"; then
   done
 fi
 
-ISDOCKER_ENV_NAME="${ISDOCKER_PARAMS[0]:-}"
+if test -f "${ISDOCKER_ENV_PATH}/.env"; then
+  > "${ISDOCKER_ENV_PATH}/.env"
+fi
 
-cat > "${ISDOCKER_ENV_PATH}/.env" <<EOF
-ISDOCKER_ENV_NAME=$ISDOCKER_ENV_NAME
-EOF
+ISDOCKER_ENV_NAME="${ISDOCKER_PARAMS[0]:-}"
 
 ENV_INIT_FILE="${ISDOCKER_DIR}/docker/environments/init.env"
 if [[ ! -z $ENV_INIT_FILE ]]; then
  cat "${ENV_INIT_FILE}" >> "${ISDOCKER_ENV_PATH}/.env"
 fi
+
+sed -i 's|COMPOSE_PROJECT_NAME=.*|COMPOSE_PROJECT_NAME='"$ISDOCKER_ENV_NAME"'|g' "${ISDOCKER_ENV_PATH}/.env"
+sed -i 's|WORK_DIR=.*|WORK_DIR='"$ISDOCKER_ENV_PATH"'|g' "${ISDOCKER_ENV_PATH}/.env"

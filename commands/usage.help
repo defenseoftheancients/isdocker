@@ -25,6 +25,7 @@ ISDOCKER version $(cat ${ISDOCKER_DIR}/version)
   env               Controls an environment from any point within the root project directory
   shell             Launches into a shell within the current project environment 
   db                Interacts with the db service on an environment
+  config            Add configuration files for the specified images
   version           Show version information
 EOF
 )

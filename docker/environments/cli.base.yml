@@ -12,7 +12,7 @@ services:
       internal:
       mail:
       proxy:
-    container_name: ${ISDOCKER_ENV_NAME}-cli
+    container_name: ${COMPOSE_PROJECT_NAME}-cli
     env_file: ${ISDOCKER_ENV_CONF:-}/blackfire.env
     environment:
       UID: ${DOCKER_UID:-1000}
