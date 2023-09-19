@@ -72,4 +72,3 @@ if [[ ${ISDOCKER_HELP} ]]; then
   source "${ISDOCKER_DIR}/commands/usage.cmd"
 fi
 source "${ISDOCKER_CMD_EXEC}"
-

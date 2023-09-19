@@ -91,4 +91,3 @@ fi
 ${DOCKER_COMPOSE_COMMAND} \
     --project-directory "${ISDOCKER_ENV_PATH}" -p "${COMPOSE_PROJECT_NAME}" \
     "${DOCKER_COMPOSE_ARGS[@]}" "${ISDOCKER_PARAMS[@]}" "$@"
-  

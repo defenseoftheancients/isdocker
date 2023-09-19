@@ -30,8 +30,8 @@
 sudo mkdir /opt/isdocker
 sudo chown $(whoami) /opt/isdocker
 git clone -b master https://github.com/defenseoftheancients/isdocker.git /opt/isdocker
-echo 'export PATH="/opt/isdocker/bin:$PATH"' >> ~/.bashrc
-PATH="/opt/isdocker/bin:$PATH"
+echo 'alias isdocker="/opt/isdocker/bin/isdocker"' >> ~/.bashrc
+source ~/.bashrc
 ```
 2. Installing via Homebrew
 * Available soon
