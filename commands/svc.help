@@ -1,12 +1,13 @@
-#!/bin/bash
-
-COMPOSE_USAGE=$(${DOCKER_COMPOSE_COMMAND} "${ISDOCKER_PARAMS[@]}" "$@" \
-  | grep -vE '(--file|--project-name|--project-directory|default: docker-compose.yml|default: directory name)' \
-  | sed '1d;2d;s/docker-compose/svc/' \
-  | sed -E "s/^(Usage|Options|Commands):/$(echo -e "\033[33m\\1:\033[0m")/g"
-)
 
 ISDOCKER_USAGE=$(cat <<EOF
-${COMPOSE_USAGE}
+\033[33mUsage:\033[0m
+  svc <sub-command>
+
+\033[33mOptions:\033[0m
+  -h, --help        Display this help menu
+
+\033[33mCommands:\033[0m
+  up                  Builds, (re)creates, starts for global services.
+  down                Stops containers and removes containers, networks, volumes, and images created by up
 EOF
 )
