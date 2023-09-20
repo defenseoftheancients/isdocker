@@ -34,7 +34,14 @@ echo 'alias isdocker="/opt/isdocker/bin/isdocker"' >> ~/.bashrc
 source ~/.bashrc
 ```
 2. Installing via Homebrew
-* Available soon
+```sh
+brew install defenseoftheancients/isdocker/isdocker
+```
+or
+```sh
+brew tap defenseoftheancients/isdocker
+brew install isdocker
+```
 
 ## Usage
 
