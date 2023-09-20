@@ -10,7 +10,7 @@ services:
         - traefik.http.routers.nginx-${COMPOSE_PROJECT_NAME}.service=nginx-${COMPOSE_PROJECT_NAME}
         - traefik.http.services.nginx-${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80
             # HTTPS traffic
-        - traefik.http.routers.nginx-${COMPOSE_PROJECT_NAME}-https.rule=Host(`${VIRTUAL_HOST}`
+        - traefik.http.routers.nginx-${COMPOSE_PROJECT_NAME}-https.rule=Host(`${VIRTUAL_HOST}`)
         - traefik.http.routers.nginx-${COMPOSE_PROJECT_NAME}-https.entrypoints=https
         - traefik.http.routers.nginx-${COMPOSE_PROJECT_NAME}-https.service=nginx-${COMPOSE_PROJECT_NAME}-https
         - traefik.http.services.nginx-${COMPOSE_PROJECT_NAME}-https.loadbalancer.server.port=443
