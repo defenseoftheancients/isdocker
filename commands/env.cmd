@@ -31,6 +31,9 @@ appendEnvPartialIfExists "networks"
 [[ ${ISDOCKER_SEARCHENGINE} -eq 1 ]] \
     && appendEnvPartialIfExists "search-engine"
 
+[[ ${ISDOCKER_HTTPD} -eq 1 ]] \
+    && appendEnvPartialIfExists "httpd"
+
 [[ ${ISDOCKER_ADMINER} -eq 1 ]] \
     && appendEnvPartialIfExists "adminer"
 
